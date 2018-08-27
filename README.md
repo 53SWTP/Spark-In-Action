@@ -9,7 +9,7 @@ ISBN: 9791160504798
 ### 1부 첫걸음
 * [1장 아파치 스파크 소개](Chapter01-Introduction-to-apache-spark.md)
 * [2장 스파크의 기초](Chapter02-Spark-fundamentals.md)
-* 3장 스파크 애플리케이션 작성하기
+* [3장 스파크 애플리케이션 작성하기](Chapter03-Writing-spark-applications.md)
 * 4장 스파크 API 깊이 파헤치기
 
 ### 2부 스파크 패밀리와 만남
