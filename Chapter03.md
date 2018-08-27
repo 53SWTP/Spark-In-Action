@@ -126,6 +126,7 @@ DataFrame SQL 표현식에서는 filter 함수를 사용할 수 없어 UDF(스�
 
 ### 3.2.6 공유 변수
 가십 프로토콜을 사용하여 공유 변수를 유기적으로 확산함(Like P2P)
+
 ***공유 변수 등록***
 ```scala
 	val bcEmployees = sc.broadcast(employees)
