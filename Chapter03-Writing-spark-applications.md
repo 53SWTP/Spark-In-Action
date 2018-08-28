@@ -134,9 +134,10 @@ DataFrame SQL 표현식에서는 filter 함수를 사용할 수 없어 UDF(스�
 	import spark.implicits._
     val isEmp = user => bcEmployees.value.contains(user) #수정
     val isEmployee = spark.udf.register("SetContainsUdf", isEmp) #기존 소스 isEmpUdf,SetContainsUdf 차이는?
-    val filtered = ordered.filter(isEmployee($"login"))
+    val filtered = ordered.filter(isEmployee($"login")) 
     filtered.show()
 ```
+$대신 ordered("login")도 가능!!
 
 ### 3.2.7 전체 데이터셋 사용
 
