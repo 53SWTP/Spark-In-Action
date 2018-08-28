@@ -57,7 +57,7 @@ import org.apache.spark.sql.SparkSession
 object App {
 	def main(args : Array[String]) {
 		val spark = SparkSession.builder()
-			.setAppNameappName("GitHub push counter")
+			.appName("GitHub push counter")
 			.master("local[*]")
 			.getOrCreate()
 
@@ -77,7 +77,7 @@ object App {
 
 ***App.scala 추가***
 ```scala
-	pusher.printSchema
+	pushes.printSchema
 	println("all events: " + ghLog.count)
 	println("only pushes: " + pushes.count)
 	pushes.show(5)
