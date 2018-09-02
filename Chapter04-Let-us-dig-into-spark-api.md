@@ -124,3 +124,30 @@ object Chapter4 {
 
 }
 ```
+## 4-2 데이터 파티셔닝을 이해하고 데이터 셔플링 최소화
+1. 데이터 파티셔닝
+   - 데이터를 여러 클러스터 노드로 분할하는 메커니즘
+   
+2. 파티션
+   - RDD 데이터를 조각한 부분
+3. 파티셔너(Partitioner)
+   - RDD의 각요소에 파티션 번호를 할당하는 객체
+   - 종류 
+     - HashPartitioner(기본 파티셔너)
+       - 키의 hashCode를 이용해서 파티션 번호를 구함
+         - (partitionIndex = hashCode % numberOfPartitions)
+         - 랜덤하게 분포되지만, 대규모의 데이터를 상대적으로 적은 수의 파티션으로 나누면 데이터를 고르게 분산
+     - RangePartitioner
+       - 정렬된 RDD를 같은 간격으로 나눔(잘 사용 되지 않음)
+     - 사용자정의 Partitioner (http://bit.ly/2MH59y9)
+       - Pair RDD에서만 사용 가능
+   - 적용
+     - Pair RDD의 변환 연산자를 호출할때 두번째 인수로 전달(Int형 혹은 Partitioner) 
+     ```scala
+     rdd.foldByKey(afunction, 100) //100개의 파티션으로 나눔
+     rdd.foldByKey(afunction, new HashPartitioner(100)) //100개의 파티션으로 나눔
+     ```       
+     - 따로 전달하지 않을시 부모RDD(이전 RDD)의 파티션 수를 따른다.
+2. 셔플링
+   - 파티션 간의 물리적인 
+           
