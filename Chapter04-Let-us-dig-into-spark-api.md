@@ -194,3 +194,131 @@ object Chapter4 {
    - 파티션의 모든 요소를 하나의 배열로 모음
    - 데이터가 많을시 메모리 문제가 발생할 수 있다.
    
+## 4-3 데이터 조인, 정렬, 그루핑
+1. 데이터 조인
+   - 여러 RDD간의 내용을 합침
+     1. 조인 연산자
+        - 특징
+          - Partitioner를 지정하지 않으면 첫번째 RDD의 Partitioner를 사용
+          - partitioner를 명시적으로 지정하지 않으면 HashPartitioner를 생성하고 spark.default.partitions의 값을 참조하거나, 두 RDD의 파티션 중 큰 값을 참조
+        - 종류
+          - join
+            - (Pair RDD[(K, V)] , Pair RDD[(K, W)]) => Pair RDD(K, (V, W))] 
+            - 한쪽에 있는 키요소는 제외
+          - leftOuterJoin
+            - (Pair RDD[(K,V)] , Pair RDD[(K,W)]) => Pair RDD(K, (V, Option(W)))] 
+            - 두번째 RDD에만 있는 키의 요소는 결과에서 제외
+          - rightOuterJoin
+            - ((Pair RDD[(K,V)] , Pair RDD[(K,W)]) => Pair RDD(K, (Option(V), W))]
+            - 첫번째 RDD에만 있는 키의 요소는 결과에서 제외
+          - fullOuterJoin
+            - ((Pair RDD[(K,V)] , Pair RDD[(K,W)]) => Pair RDD(K, (Option(V), Option(W)))]
+     2. 변환 연산자
+        - substract
+        - substractByKey
+        - cogroup
+        - intersection
+        - cartesian
+        - zip
+        - zipPartitions
+ 2. 데이터 정렬
+    - 특징
+      - 정렬 기준은 orderable 클래스만 가능하다.
+      - 해당 기준 값이 orderable클래스를 상속하지 않았으면, Ordered 트레잇, Ordering 트레잇을 통해 구현 가능
+      ```scala
+        implicit val emplOrdering: Ordering[Employee] = Ordering.by(_.lastName)
+      ```
+    - 종류
+      - repartitionAndSortWithinPartition
+      - sortByKey
+      - sortBy
+ 3. 데이터 그루핑
+    - 특정 기준에 따라 단일 컬렉션으로 집계하는 연산
+    - 종류
+      - aggregateByKey
+      - groupByKey 
+        - 모든 값을 메모리로 가져오기 때문에 주의
+      - groupBy
+      - combineByKey
+        - aggregateByKey, groupByKey, foldByKey, reduceByKey를 구현할때 사용
+      **combineByKey 시그니처**
+      ```scala
+      def combineByKey[C](createCombiner: V => C,
+          mergeValue: (C,  V) => C,
+          mergeCombiners: (C, C) => C,
+          partitioner: Partitioner,
+          mapSideCombine: Boolean = true,
+          serializer: Serializer = null): RDD[(K,C)]
+      ```
+## 4-4 RDD 의존 관계
+   1. 의존 관계
+      - 스파크의 실행모델은 방향성 비순환 그래프 (DAG), 이 그래프를 RDD 계보(lineage)라고 함
+      - 좁은 의존관계(Narrow)
+        - 1대1의존관계(one-to-one)
+          - 셔플링이 필요하지 않은 모든 변환 연산
+        - 범위형 의존관계(range)
+          - 여러 부모에 대한 의존 과게를 하나로 결합한 경우 (union 연산)
+      - 넓은 의존관계(wide)
+          - 셔플링이 필요한 연산
+      - 스테이지
+        - 셔플링이 일어나기 전까지의 RDD계보
+   2. RDD 체크포인트
+      - 장애 발생시 연산을 줄이기 위해 특정 지점까지의 RDD계보를 저장 후 관리하는 것
+      
+## 4-5 누적 변수와 공유 변수
+   1. 누적변수
+      - SparkContext.accumulater(initialValue)를 호출해서 생성
+      - value는 드라이버 프로그램에서만 참조할 수 있다.
+      - 예제
+      ```scala
+      val acc = sc.accumulater(0, "acc name")
+      val list = sc.paralleize(1 to 100000)
+      list.foreach(x => acc.add(1)) //executor 수행코드
+      acc.value // driver 수행코드
+      list.foreach(x => acc.value) //예외
+
+      ```
+      - 사용자 정의 누적 변수
+        - AccumulableParam을 구현해야함
+          - 구현 메소드
+            - zero(initialValue: T):  초깃값
+            - addInPlace(v1: T, v2: T): T  누적 값 두개 병합
+            - addAccumulator(v1: T, v2: V): T  누적 값에 새로운 값을 누적
+          - 예제
+          ```scala
+          val rdd = sc.paralleize(1 to 100)
+          import org.apache.spark.AccumulableParam
+          implicit object AvgAccParam extends AccumulableParam[(Int, Int), Int] {
+            def zero(v:(Int, Int) = (0, 0)
+            def addInPlace(v1:(Int, Int), v2: (Int, Int)) = (v1._1+v2._1, v1._2+v2._2)
+            def addAccumulator(v1:(Int, Int), v2:Int) = (v1._1+1, v1,_2+v2)
+            val acc = sc.accumulable((0,0)
+            val mean = acc.value._2.toDoule /acc.value._1
+          ```
+      - Accumulable 컬렉션에 값 누적
+        - SparkContext.accumulableCollection을 사용하면 컬렉션에 값 누적 가능
+        ```scala
+        import scala.collection.mutable.MutableList
+        val colacc = sc.accumulableCollection(MutableList[Int]())
+        rdd.foreach(x => colacc += x)
+        colacc.value
+        ```
+   2. 공유 변수
+      - SparkContext.broadcast(value)를 사용하서 생성하며, 직렬화 가능한 모든 변수는 value로 전달가능
+      - executor가 공유 변수를 필요시 로드되었는지 확인한다. 로드 하지 않으면 드라이버에 청크단위로 데이터 요청 (pull-based)
+      
+      - 읽기 연산만 가능
+      - 공유 변수 접근시는 value 메소드를 사용
+      
+      - destroy를 호출해서 완전히 삭제 가능. unpersist
+      
+      - 설정정보
+      ```bash
+      spark.broadcast.compress=true    # 전달 전에 데이터 압축 여부
+      spark.io.compression.codec=lz4   # 압축 방식
+      spark.broadcast.blockSize=4096   # 공유변수 전송시 사용할 청크 크기
+      ```
+      
+          
+
+   
