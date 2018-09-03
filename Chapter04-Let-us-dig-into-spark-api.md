@@ -213,6 +213,29 @@ object Chapter4 {
             - 첫번째 RDD에만 있는 키의 요소는 결과에서 제외
           - fullOuterJoin
             - ((Pair RDD[(K,V)] , Pair RDD[(K,W)]) => Pair RDD(K, (Option(V), Option(W)))]
+          - 예제
+            ```scala
+            val transByProd = transData.map(tran => tran(3).toInt, tran))
+            val totlasByProd = transByProd.mapValues(t => t(5).toDouble).reduceByKey{case(tot1, tot2) => tot1 + tot2}
+            val products = sc.textFile("./ch04_data_products.txt").map(line => line.split("#")).map(p => (p(0).toInt, p))
+            
+            // join
+            val totalsAndProds = totlasByProd.join(products)
+            totalsAndProds.first()
+            
+            // leftOuterJoin
+            val totalsWithMissingProds = products.leftOuterJoin(totalsByProd)
+            
+            // rightOuterJoin
+            // val totalsWithMissingProds = totalsByProd.rightOuterJoin(products)
+            val missingProds = totalsWithMissingProds.
+            filter(x => x._2._1 == None).
+            map(x => x._2._2)
+            
+            missingProds.foreach(p => println(p.mkString(", ")))
+            
+            
+            ```
      2. 변환 연산자
         - substract
         - substractByKey
@@ -241,6 +264,7 @@ object Chapter4 {
       - groupBy
       - combineByKey
         - aggregateByKey, groupByKey, foldByKey, reduceByKey를 구현할때 사용
+      
       **combineByKey 시그니처**
       ```scala
       def combineByKey[C](createCombiner: V => C,
