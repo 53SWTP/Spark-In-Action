@@ -182,15 +182,15 @@ object Chapter4 {
 5. RDD 파티션 변경
    - 작업 부하를 효율적으로 분산시키거나, 메모리 문제를 방지하려고 사용
    - 파티션 변환 연산자
-     -partitionBy
-     -coalesce
-     -repartition
-     -repartitionAndSortWithPartition
-6.파티션 단위로 데이터 매핑
+     - partitionBy
+     - coalesce
+     - repartition
+     - repartitionAndSortWithPartition
+6. 파티션 단위로 데이터 매핑
    - 파티션 내에서만 데이터가 매핑되도록 함으로써, 셔플링을 억제
-   - mapPartitions
-   - mapPartitionsWithIndex
-7.glom
+     - mapPartitions
+     - mapPartitionsWithIndex
+7. glom
    - 파티션의 모든 요소를 하나의 배열로 모음
-   - 데이터가 많을시 메모리 문제가 
+   - 데이터가 많을시 메모리 문제가 발생할 수 있다.
    
