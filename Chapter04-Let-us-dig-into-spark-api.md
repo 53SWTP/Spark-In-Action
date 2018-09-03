@@ -148,6 +148,49 @@ object Chapter4 {
      rdd.foldByKey(afunction, new HashPartitioner(100)) //100개의 파티션으로 나눔
      ```       
      - 따로 전달하지 않을시 부모RDD(이전 RDD)의 파티션 수를 따른다.
-2. 셔플링
-   - 파티션 간의 물리적인 
-           
+4. 셔플링
+   - 파티션 간의 물리적인 데이터 이동
+   - 파일 및 메모리 일기/쓰기 연산과 네트워크 연산이 포함되기 때문에 성능에 영향을 줌
+   
+     4.1 셔플링 발생조건
+       - Partitioner를 명시적으로 변경하는 경우
+         - Pair RDD의 변환 연산자는 대부분 파티셔너를 추가할 수 있도록 오버라이딩 되어 있음.
+         - Partitioner의 클래스가 달라지면 셔플함.
+         - Partitioner의 클래스와 파티션 수가 동일하면 동일한 Partitioner로 처리하여 셔플하지 않음.
+       - Partitioner를 제거하는 경우
+         - map과 flatMap인 경우 RDD의 Partitioner를 제거하여 특정 변환 연산자가 쓰이는 경우 셔플함
+           - Pair RDD
+             - aggregateByKey, foldByKey, reduceByKey, groupByKey, join, leftOuterJoin, rightOuterJoin, fullOuterJoin, subtractByKey
+           - RDD
+             - subtract, intersection, groupWith
+           - sortByKey
+           - partitionBy, coalesce(shuffle=true인경우)
+   
+     4.2 셔플링 기반 매개변수
+  
+   ```bash
+       spark.shuffle.service.enabled=true      # 외부 셔플링 서비스설정
+       spark.shuffle.manage=hash               # [hash/sort]가능
+       spark.shuffle.consolidateFiles=false    # 셔플 도중 생기는 중간 파일의 통합 여부
+       spark.shuffle.spill=true                # 메모리 리소스의 제한여부
+       spark.shuffle.spill.compres=true        # 디스크에 쓸때 압축여부
+       spark.shuffle.spill.batchSize=10000     # 데이터를 디스크로 내보낼 때 일괄로 직렬화 혹은 역직렬화 할 객체 수
+       spark.shuffle.service.port=7337         # 외부 셔플링 서비스를 활성화할 경우 서비스 서버가 사용할 포트 번호
+       #spark.memory.useLegacyMode=true        # spark.shuffle.memoryFraction을 사용하고 싶을때 true로 설정
+       #spark.shuffle.memoryFraction=0.2       # 메모리 제한 임계치 (임계치가 넘어가면 디스크에 쓴다.) 1.6이후에는 사용되지 않음.
+   ```
+5. RDD 파티션 변경
+   - 작업 부하를 효율적으로 분산시키거나, 메모리 문제를 방지하려고 사용
+   - 파티션 변환 연산자
+     -partitionBy
+     -coalesce
+     -repartition
+     -repartitionAndSortWithPartition
+6.파티션 단위로 데이터 매핑
+   - 파티션 내에서만 데이터가 매핑되도록 함으로써, 셔플링을 억제
+   - mapPartitions
+   - mapPartitionsWithIndex
+7.glom
+   - 파티션의 모든 요소를 하나의 배열로 모음
+   - 데이터가 많을시 메모리 문제가 
+   
