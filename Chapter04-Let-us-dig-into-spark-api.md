@@ -213,29 +213,6 @@ object Chapter4 {
             - 첫번째 RDD에만 있는 키의 요소는 결과에서 제외
           - fullOuterJoin
             - ((Pair RDD[(K,V)] , Pair RDD[(K,W)]) => Pair RDD(K, (Option(V), Option(W)))]
-          - 예제
-            ```scala
-            val transByProd = transData.map(tran => tran(3).toInt, tran))
-            val totlasByProd = transByProd.mapValues(t => t(5).toDouble).reduceByKey{case(tot1, tot2) => tot1 + tot2}
-            val products = sc.textFile("./ch04_data_products.txt").map(line => line.split("#")).map(p => (p(0).toInt, p))
-            
-            // join
-            val totalsAndProds = totlasByProd.join(products)
-            totalsAndProds.first()
-            
-            // leftOuterJoin
-            val totalsWithMissingProds = products.leftOuterJoin(totalsByProd)
-            
-            // rightOuterJoin
-            // val totalsWithMissingProds = totalsByProd.rightOuterJoin(products)
-            val missingProds = totalsWithMissingProds.
-            filter(x => x._2._1 == None).
-            map(x => x._2._2)
-            
-            missingProds.foreach(p => println(p.mkString(", ")))
-            
-            
-            ```
      2. 변환 연산자
         - substract
         - substractByKey
@@ -274,6 +251,97 @@ object Chapter4 {
           mapSideCombine: Boolean = true,
           serializer: Serializer = null): RDD[(K,C)]
       ```
+      
+      - 예제
+      ```scala
+          def main(args: Array[String]): Unit = {
+
+            /**
+              *
+              * 어제 판매한 이름과 상품별 매출액 합계(알파벳 오름차순으로 정렬할 것)
+              * 어제 판매하지 않은 상품 목록
+              * 전일 판매 실적 통계: 각 고객이 구매한 구입한 상품의 평균 가격, 최저 가격 및 최고 가격, 구매금액 합계
+              */
+
+
+            val spark = SparkSession.builder()
+              .appName("GitHub push counter")
+              .master("local[*]")  //스파크 클러스터 사용여부 + executor 갯수
+              .config("spark.eventLog.enabled", false)
+              .getOrCreate()
+            val sc = spark.sparkContext
+            sc.setLogLevel("ERROR")
+
+            // path는 환경에 맞게 변경
+            val path = "/Users/hojinjung/Workspace/spark/sample/ch04_data_transactions.txt"
+
+            val tranFile = sc.textFile(path);
+            /* 데이터 한줄당 고객의 구매 내역으로 아래와 같은 정보가 포함됨
+              2015-03-30#6:55 AM#51#68#1#9506.21  0:날짜 1: 일시 2: 고객ID 3:상품ID 4:구매수량, 5:구매금액
+              총 라인 수는 1000
+
+             */
+            val tranData = tranFile.map(_.split("#"))
+
+            val transByProd = tranData.map(tran => (tran(3).toInt, tran))
+            var transByCust = tranData.map(tran => (tran(2).toInt, tran))
+            val totalsByProd = transByProd.mapValues(t => t(5).toDouble).reduceByKey{case(tot1, tot2) => tot1 + tot2}
+            val products = sc.textFile("/Users/hojinjung/Workspace/spark/sample/ch04_data_products.txt")
+                             .map(line => line.split("#"))
+                             .map(p => (p(0).toInt, p))
+
+            // 판매한 상품 이름과 각 상품별 매출액
+            val totalsAndProds = totalsByProd.join(products)
+            println(totalsAndProds.first())
+
+            val totalsWithMissingProds = products.leftOuterJoin(totalsByProd)
+            // val totalsWithMissingProds = totalsByProd.rightOuterJoin(products)
+
+            // 판매하지 않는 상품 목록 by outerJoin
+            val missingProds = totalsWithMissingProds
+                               .filter(x => x._2._1 == None)
+                               .map(x => x._2._2)
+            missingProds.foreach(p => println(p.mkString(", ")))
+
+            // 판매하지 않는 상품 목록 by cogroup
+            val prodTotCogroup = totalsByProd.cogroup(products)
+            prodTotCogroup.filter(x => x._2._1.isEmpty)
+              .foreach(x => println(x._2._2.head.mkString(",")))
+
+            // 이름 알파벳 오름차순으로 정렬
+            val sortedProds = totalsAndProds.sortBy(_._2._2(1))
+            sortedProds.collect()
+
+
+            // 전일 판매 실적 통계
+            def createComb = (t:Array[String]) => {
+              val total = t(5).toDouble
+              val q = t(4).toInt
+              (total/q, total/q, q, total) //초깃값
+            }
+
+            def mergeVal:((Double,Double,Int,Double), Array[String]) => (Double,Double,Int,Double) =
+            {case((mn,mx,c,tot), t) => {
+                val total = t(5).toDouble
+                val q = t(4).toInt
+                (scala.math.min(mn,total/q), scala.math.max(mx, total/q), c+q, tot+total)
+              }}
+
+            def mergeComb:((Double,Double,Int,Double), (Double,Double,Int,Double)) => (Double,Double,Int,Double) = {
+              case((mn1, mx1, c1, tot1), (mn2, mx2, c2, tot2)) =>
+                (scala.math.min(mn1, mn2), scala.math.max(mx1,mx2), c1+c2, tot1+tot2)
+            }
+
+            val avgByCust = transByCust.combineByKey(createComb, mergeVal, mergeComb,
+              new HashPartitioner(transByCust.partitions.size))
+              .mapValues({case(mn,mx,cnt,tot) => (mn, mx, cnt, tot, tot/cnt)})
+
+
+            println(avgByCust.first)
+
+
+          }
+      ```      
 ## 4-4 RDD 의존 관계
    1. 의존 관계
       - 스파크의 실행모델은 방향성 비순환 그래프 (DAG), 이 그래프를 RDD 계보(lineage)라고 함
