@@ -10,10 +10,10 @@ ISBN: 9791160504798
 * [1장 아파치 스파크 소개](Chapter01-Introduction-to-apache-spark.md)
 * [2장 스파크의 기초](Chapter02-Spark-fundamentals.md)
 * [3장 스파크 애플리케이션 작성하기](Chapter03-Writing-spark-applications.md)
-* 4장 스파크 API 깊이 파헤치기
+* [4장 스파크 API 깊이 파헤치기](Chapter04-Let-us-dig-into-spark-api.md)
 
 ### 2부 스파크 패밀리와 만남
-* 5장 스파크 SQL로 멋진 쿼리를 실행하자
+* [5장 스파크 SQL로 멋진 쿼리를 실행하자](Chapter05-Sparkling-queries-with-spark-sql.md)
 * 6장 스파크 스트리밍으로 데이터를 흐르게 하자
 * 7장 MLlib로 더 똑똑해지자
 * 8장 스파크 ML로 만드는 분류와 군집화
