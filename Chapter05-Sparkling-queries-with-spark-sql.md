@@ -259,13 +259,13 @@ postsDf.na.fill(Map("viewCount" -> 0))
 
 Replace
 ```
-val postsDfCorrected = postDf.na.replace(Array("id", "acceptedAnswerId"), Map(1177 -> 3000))
+val postsDfCorrected = postsDf.na.replace(Array("id", "acceptedAnswerId"), Map(1177 -> 3000))
 ```
 
 ### 5.1.5 DataFrame을 RDD로 변환
 
 ```
-val postsRdd = postDf.rdd //also lazily evaluated.
+val postsRdd = postsDf.rdd //also lazily evaluated.
 ```
 
 ```
