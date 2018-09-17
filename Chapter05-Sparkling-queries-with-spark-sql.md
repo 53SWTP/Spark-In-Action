@@ -446,8 +446,7 @@ val resParq = sql("select * from postsParquet")
 
 ## 5-5 카탈리스트 최적화 엔진 Catalyst Optimizer
 
-![convert_sql_to_rdd]
-(https://thebook.io/img/006908/spark220.jpg)
+![convert_sql_to_rdd](https://thebook.io/img/006908/spark220.jpg)
 
 DSL과 SQL표현식을 RDD연산으로 변환.
 
