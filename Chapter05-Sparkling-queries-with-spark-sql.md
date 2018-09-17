@@ -450,6 +450,12 @@ val resParq = sql("select * from postsParquet")
 
 DSL과 SQL표현식을 RDD연산으로 변환.
 
+```
+scala> val postsFiltered = postsDf.filter('postTypeId === 1).withColumn("ratio", 'viewcount / 'score).where('ratio < 35)
+
+scala> postsFiltered.explain(true)
+
+```
 
 ## 5-6 텅스텐 프로젝트의 스파크 성능 향상
 - CPU , Memory 성능이 향상되었다.
