@@ -1,9 +1,13 @@
 # 5장  SQL로 멋진 쿼리를 실행하자
 
 ## 5-1 DataFrame 다루기
+
 Pandas(Python), R, Julia의 DataFrame의 영향을 받음. + 분산처리 설계와 카탈리스트 엔진 
+
 SQL 및 DSL로 작성된 표현식을 _최적화된_ RDD operations  로 변환
+
 컬럼명으로  데이터를 참조하고, SQL 쿼리를 사용할 수 있는 등 _데이터 분석가가_ 정형 데이터를 효과적으로 다루게 해 줌
+
 다양한 소스의 데이터를 손쉽게 통합할 수 있음
 
 DataFrame을 생성하는 방법
