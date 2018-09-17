@@ -444,8 +444,17 @@ val resParq = sql("select * from postsParquet")
 ```
 
 
-## 5-5 카탈리스트 최적화 엔진
- 뭔말이야
+## 5-5 카탈리스트 최적화 엔진 Catalyst Optimizer
+
+![convert_sql_to_rdd]
+(https://thebook.io/img/006908/spark220.jpg)
+
+DSL과 SQL표현식을 RDD연산으로 변환.
+
 
 ## 5-6 텅스텐 프로젝트의 스파크 성능 향상
- 통수10
+ CPU , Memory 성능이 향상되었다.
+ 가비지 컬렉션 문제 (상당부분) 해결
+ -> JVM Heap이 아닌 메모리의 Native 영역을 사용(sun.misc.Unsafe) 함으로서 Java object 오버헤드 및 GC 문제를 해결
+참고 :  https://younggyuchun.wordpress.com/2017/01/31/spark-%EC%84%B1%EB%8A%A5%EC%9D%98-%ED%95%B5%EC%8B%AC-project-tungsten-%ED%86%BA%EC%95%84%EB%B3%B4%EA%B8%B0/
+우리가 설치하고 사용중인 스파크는 이미 향상된 스파크이므로 조금만 감동받고 넘어갑니다
