@@ -328,7 +328,7 @@ postsVotes.show(5)
 val postsVotesOuter = postsDf.join(votesDf, postsDf("id") === votesDf("postId"), "outer")
 postsVotesOuter.show(11)
 ```
-
+http://kirillpavlov.com/blog/2016/04/23/beyond-traditional-join-with-apache-spark/
 
 
 ## 5-2 DataFrame을 넘어 Dataset으로
