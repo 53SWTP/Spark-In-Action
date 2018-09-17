@@ -428,7 +428,7 @@ val result = spark.read.jdbc("jdbc:postgresql://postgresrv/mydb", "posts", Array
 
 SQL메서드로 등록한 데이터 소스에서 데이터 불러오기
 ```
-sql("CREATE TEMPORARY TABLE postsjdbc "+
+sql("CREATE TEMPORARY VIEW postsjdbc "+
   "USING org.apache.spark.sql.jdbc "+
   "OPTIONS ("+
     "url 'jdbc:postgresql://postgresrv/mydb',"+
@@ -436,7 +436,7 @@ sql("CREATE TEMPORARY TABLE postsjdbc "+
     "user 'user',"+
     "password 'password')")
 
-sql("CREATE TEMPORARY TABLE postsParquet "+
+sql("CREATE TEMPORARY VIEW postsParquet "+
   "USING org.apache.spark.sql.parquet "+
   "OPTIONS (path '/path/to/parquet_file')")
 val resParq = sql("select * from postsParquet")
