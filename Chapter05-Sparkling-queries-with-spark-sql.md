@@ -354,13 +354,13 @@ postsDf.createOrReplaceTempView("posts_temp")
 ```
 테이블을 영구적으로 등록하기
 ```
-postDf.write.saveAsTable("posts")
+postsDf.write.saveAsTable("posts")
 votesDf.write.saveAsTable("votes")
 ```
 
 덮어쓰기
 ```
-postDf.write.mode("overwrite").saveAsTable("posts")
+postsDf.write.mode("overwrite").saveAsTable("posts")
 votesDf.write.mode("overwrite").saveAsTable("votes")
 ```
 
