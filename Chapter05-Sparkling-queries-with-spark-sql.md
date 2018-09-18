@@ -22,7 +22,7 @@ DataFrame을 생성하는 방법
 - 스키마를 명시적으로 지정하는 방법 : De facto standard
 
 
-```
+```scala
 
 object DataFrameTest {
   import org.apache.spark.sql.{DataFrame, SparkSession}
@@ -152,31 +152,36 @@ object DataFrameTest {
 ### 5.1.2 기본 DataFrame API
 
 컬럼 선택
-```
+
+```scala
 val postsDf = itPostsDFStruct
 val postsIdBody = postsDf.select("id", "body")
 val postsIdBody2 = postsDf.select(postsDf.col("id"), postsDf.col("body"))
 ```
 
 Symbol 객체 사용
-```
+
+```scala
 import spark.implicits._
 val postsIdBody3 = postsDf.select(Symbol("id"), Symbol("body"))
 val postsIdBody4 = postsDf.select('id, 'body)
 ```
 $ 메서드 사용 : 문자열->ColumnName 변환
-```
+
+```scala
 val postsIdBody5 = postsDf.select($"id", $"body")
 ```
 
 컬럼 날리기
-```
+
+```scala
 val postIds = postsIdBody.drop("body")
 ```
 
 
 데이터 필터링
-```
+
+```scala
 postsIdBody.filter('body contains "Italiano").count()
 
 val noAnswer = postsDf.filter(('postTypeId === 1) and ('acceptedAnswerId isNull))
@@ -185,18 +190,21 @@ val firstTenQs = postsDf.filter('postTypeId === 1).limit(10)
 ```
 
 컬럼이름 변경
-```
+
+```scala
 val firstTenQsRn = firstTenQs.withColumnRenamed("ownerUserId", "owner")
 
 ```
 
 새로운 컬럼 추가
-```
+
+```scala
 postsDf.filter('postTypeId === 1).withColumn("ratio", 'viewCount / 'score).where('ratio < 35).show()
 ```
 
 [정답] 가장 최근에 수정한 10개 질문 출력
-```
+
+```scala
 //The 10 most recently modified questions:
 postsDf.filter('postTypeId === 1).orderBy('lastActivityDate desc).limit(10).show
 ```
@@ -204,23 +212,27 @@ postsDf.filter('postTypeId === 1).orderBy('lastActivityDate desc).limit(10).show
 ### 5.1.3 SQL 함수로 데이터에 연산 수행
 
 SQL 함수 import!
-```
+
+```scala
 import org.apache.spark.sql.functions._
 ```
 
 datediff
-```
+
+```scala
 val bodyText = postsDf.filter('postTypeId === 1).withColumn("activePeriod", datediff('lastActivityDate, 'creationDate)).orderBy('activePeriod desc).head.getString(3).replace("&lt;","<").replace("&gt;",">")
 println(bodyText)
 ```
 
 aggregations
-```
+
+```scala
 postsDf.select(avg('score), max('score), count('score)).show
 ```
 
 Window functions (frame)
-```
+
+```scala
 import org.apache.spark.sql.expressions.Window
 
 postsDf.filter('postTypeId === 1).select('ownerUserId, 'acceptedAnswerId, 'score, max('score).over(Window.partitionBy('ownerUserId)) as "maxPerUser").withColumn("toMax", 'maxPerUser - 'score).show(10)
@@ -242,33 +254,39 @@ postsDf.filter('postTypeId === 1).select('tags, countTags('tags) as "tagCnt").sh
 DataFrame.na 필드 : DataFrameNaFunctions
 
 Drop N/A
-```
+
+```scala
 val cleanPosts = postsDf.na.drop()
 cleanPosts.count()
 ```
 
 Drop acceptedAnswerId's N/A
-```
+
+```scala
 postsDf.na.drop(Array("acceptedAnswerId"))
 ```
 
 Fill 0s in viewCount column
-```
+
+```scala
 postsDf.na.fill(Map("viewCount" -> 0))
 ```
 
 Replace
-```
+
+```scala
 val postsDfCorrected = postsDf.na.replace(Array("id", "acceptedAnswerId"), Map(1177 -> 3000))
 ```
 
 ### 5.1.5 DataFrame을 RDD로 변환
 
-```
+
+```scala
 val postsRdd = postsDf.rdd //also lazily evaluated.
 ```
 
-```
+
+```scala
 import org.apache.spark.sql.Row
 val postsMapped = postsDf.rdd.map(row => Row.fromSeq(
 	row.toSeq.updated(3, row.getString(3).replace("&lt;","<").replace("&gt;",">"))
@@ -280,7 +298,8 @@ val postsDfNew = spark.createDataFrame(postsMapped, postsDf.schema)
 
 ### 5.1.6 Data Grouping
 
-```
+
+```scala
 postsDfNew.groupBy('ownerUserId, 'tags, 'postTypeId).count.orderBy('ownerUserId desc).show(10)
 
 postsDfNew.groupBy('ownerUserId).agg(max('lastActivityDate), max('score)).show(10)
@@ -298,14 +317,16 @@ smplDf.cube('ownerUserId, 'tags, 'postTypeId).count.show()
 ```
 
 (당구장표시) 참고 스파크 SQL 파라미터 설정 방법
-```
+
+```scala
 spark.sql("SET spark.sql.caseSensitive=true")
 spark.conf.set("spark.sql.caseSensitive", "true")
 
 ```
 ### 5.1.7 Data Join
 
-```
+
+```scala
 
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.types._
@@ -340,7 +361,8 @@ RDD의 확장판(?)
 Spark 2.0에서는 DataFrame을 Dataset[Row]로 구현함
 
 DataFrame에서 Dataset 으로 변환하기
-```
+
+```scala
 val stringDataSet = spark.read.text("path/to/file").as[String]
 ```
 
@@ -349,23 +371,27 @@ val stringDataSet = spark.read.text("path/to/file").as[String]
 ### 5.3.1 테이블 카탈로그와 하이브 메타스토어
 
 테이블을 임시로 등록하기
-```
+
+```scala
 postsDf.createOrReplaceTempView("posts_temp")
 ```
 테이블을 영구적으로 등록하기
-```
+
+```scala
 postsDf.write.saveAsTable("posts")
 votesDf.write.saveAsTable("votes")
 ```
 
 덮어쓰기
-```
+
+```scala
 postsDf.write.mode("overwrite").saveAsTable("posts")
 votesDf.write.mode("overwrite").saveAsTable("votes")
 ```
 
 스파크 테이블 카탈로그
-```
+
+```scala
 spark.catalog.listTables().show()
 spark.catalog.listColumns("votes").show()
 spark.catalog.listFunctions.show()
@@ -373,12 +399,14 @@ spark.catalog.listFunctions.show()
 
 ### 5.3.2 (드디어) SQL 쿼리 실행
 
-```
+
+```scala
 val resultDf = sql("select * from posts")
 ```
 
 spark-sql 사용
-```
+
+```sql
 spark-sql> select substring(title, 0, 70) from posts where postTypeId = 1 order by creationDate desc limit 3;
 ```
 셸에서
@@ -398,14 +426,16 @@ Spark Thrift : JDBC(ODBC) 서버로 원격지에서 SQL명령을 실행할 수 �
 
 ### 5.4.2 데이터 저장
 JSON 형태로 저장
-```
+
+```scala
 postsDf.write.format("json").saveAsTable("postsjson")
 
 sql("select * from postsjson")
 ```
 
 JDBC 메서드로 RDB 에 저장
-```
+
+```scala
 val props = new java.util.Properties()
 props.setProperty("user", "user")
 props.setProperty("password", "password")
@@ -415,19 +445,22 @@ postsDf.write.jdbc("jdbc:postgresql://postgresrv/mydb", "posts", props)
 ### 5.4.3 데이터 불러오기
 
 파일에서 불러오기
-```
+
+```scala
 val postsDf = spark.read.table("posts")
 val postsDf = spark.table("posts")
 ```
 
 RDB에서 불러오기
-```
+
+```scala
 val result = spark.read.jdbc("jdbc:postgresql://postgresrv/mydb", "posts", Array("viewCount > 3"), props)
 ```
 
 
 SQL메서드로 등록한 데이터 소스에서 데이터 불러오기
-```
+
+```scala
 sql("CREATE TEMPORARY VIEW postsjdbc "+
   "USING org.apache.spark.sql.jdbc "+
   "OPTIONS ("+
