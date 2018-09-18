@@ -241,7 +241,7 @@ postsDf.filter('postTypeId === 1).select('ownerUserId, 'id, 'creationDate, lag('
 ```
 
 사용자 정의 함수
-```
+```scala
 val countTags = udf((tags: String) => "&lt;".r.findAllMatchIn(tags).length)
 val countTags_2 = spark.udf.register("countTags", (tags: String) => "&lt;".r.findAllMatchIn(tags).length)
 postsDf.filter('postTypeId === 1).select('tags, countTags('tags) as "tagCnt").show(10, false)
