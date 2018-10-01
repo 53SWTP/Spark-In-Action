@@ -24,7 +24,7 @@
 6. Restart Now
 
 Maven 프로젝트 생성
-Catalog File : https://github.com/spark-in-action/scala-archetype-sparkinaction/raw/master/archtype-catalog.xml
+Catalog File : https://github.com/spark-in-action/scala-archetype-sparkinaction/raw/master/archetype-catalog.xml
 Description : Spark in Action
 
 ## 3.2 스파크 애플리케이션 개발
