@@ -599,7 +599,7 @@ $ bin/kafka-server-start.sh config/server.properties &
 - `metrics`: 지표 데이터를 전송할 토픽
 
 ```shell
-$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partition 1 --topic orders
+$ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic orders
 $ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic metrics
 
 # 제대로 생성되었는지 확인
