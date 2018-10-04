@@ -383,8 +383,8 @@ object Chapter4 {
           implicit object AvgAccParam extends AccumulableParam[(Int, Int), Int] {
             def zero(v:(Int, Int) = (0, 0)
             def addInPlace(v1:(Int, Int), v2: (Int, Int)) = (v1._1+v2._1, v1._2+v2._2)
-            def addAccumulator(v1:(Int, Int), v2:Int) = (v1._1+1, v1,_2+v2)
-            val acc = sc.accumulable((0,0)
+            def addAccumulator(v1:(Int, Int), v2:Int) = (v1._1+1, v1._2+v2)
+            val acc = sc.accumulable((0,0))
             val mean = acc.value._2.toDoule /acc.value._1
           ```
       - Accumulable 컬렉션에 값 누적
