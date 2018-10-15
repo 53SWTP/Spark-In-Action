@@ -14,8 +14,8 @@ ISBN: 9791160504798
 
 ### 2부 스파크 패밀리와 만남
 * [5장 스파크 SQL로 멋진 쿼리를 실행하자](Chapter05-Sparkling-queries-with-spark-sql.md)
-* 6장 스파크 스트리밍으로 데이터를 흐르게 하자
-* 7장 MLlib로 더 똑똑해지자
+* [6장 스파크 스트리밍으로 데이터를 흐르게 하자](Chapter06-Spark-streaming.md)
+* [7장 MLlib로 더 똑똑해지자](Chapter07-Getting-smart-with-MLlib.md)
 * 8장 스파크 ML로 만드는 분류와 군집화
 * 9장 점을 연결하는 GraphX
 
