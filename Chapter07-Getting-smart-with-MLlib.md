@@ -482,7 +482,7 @@ println(model.weights.toArray.map(x => x.abs).zipWithIndex.sortBy(_._1).mkString
 
 ```scala
 // save
-model.save(sc, "ch07output/model)
+model.save(sc, "ch07output/model")
 
 // load
 import org.apache.spark.mllib.regression.LinearRegressionModel
