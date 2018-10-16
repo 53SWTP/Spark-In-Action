@@ -462,7 +462,7 @@ validMetrics.rootMeanSquaredError
 validMetrics.meanSquaredError
 ```
 
-* `meanAbsoluteError`: 실게 값과 예측 값 사이의 절대 오차 평균
+* `meanAbsoluteError`: 실제 값과 예측 값 사이의 절대 오차 평균
 * `r2`: 결정 계수(coefficient of determination). 0~1의 값을 가지며 *모델이 예측하는 목표 변수의 변화량을 설명하는 정도와 설명하지 못하는 정도를 나타내는 척도*다. 1에 가깝다면 목표 변수가 가진 분산의 많은 부분을 설명할 수 있다는 의미다. 하지만 목표 변수와 상관성이 적은 특징 변수를 추가해도 지표 값이 커지는 경향이 있다.
 * `explainedVariance`: r2와 유사한 지표
 
