@@ -423,7 +423,7 @@ val validScaled = housingValid.map(x => LabeledPoint(x.label, scaler.transform(x
 `org.apache.spark.mllib.regression` 패키지의 `LinearRegressionModel` 클래스가 스파크의 선형 회귀 모델이며 이 객체는 선형 회귀 모델의 학습 알고리즘을 구현한 `LinearRegressionWithSGD` 클래스로 만들 수 있다. `LinearRegressionModel` 객체는 학습이 완료된 선형 회귀 모델의 배개변수가 저장된다.
 
 `LinearRegressionWithSGD` 활용법 두 가지
-1. `train` 정적 메서드 호출. 모델이 가중치만 학습하고 y절편을 학습알 수 없음
+1. `train` 정적 메서드 호출. 모델이 가중치만 학습하고 y절편을 학습할 수 없음
 ```scala
 import org.apache.spark.mllib.regression.LinearRegressionWithSGD
 val model = LinearRegressionWithSGD.train(trainScaled, 200, 1.0)
