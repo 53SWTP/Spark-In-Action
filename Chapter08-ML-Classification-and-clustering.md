@@ -432,8 +432,8 @@ penmm.confusionMatrix // 혼동 행렬(confusion matrix) 출력
 손글씨 숫자 데이터셋으로 의사 결정 트리 모델 훈련하는 예제 실습. 다만, 의사 결정 트리 알고리즘이 데이터셋에 있는 모든 클래스 개수를 알 수 있도록 칼럼에 메타 데이터를 추가해야 한다.
 
 ```scala
-import org.apache.spark.ml.features.StringIndexer
-import org.apache.spark.ml.features.StringIndexerModel
+import org.apache.spark.ml.feature.StringIndexer
+import org.apache.spark.ml.feature.StringIndexerModel
 
 val dtsi = new StringIndexer().setInputCol("label").setOutputCol("label-i")
 val dtsm: StringIndexerModel = dtsi.fit(penlpoints)
