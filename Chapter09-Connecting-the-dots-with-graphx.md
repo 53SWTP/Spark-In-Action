@@ -20,8 +20,8 @@
 - EdgeRDD[ED]: (srcID: Long, destId: Long, attr: ED)
     - ex) Edge(4L, 3L, "friend")
 
-//FIXME
-![Spark Graph]()
+
+__그림이첨부가안돼서 직접보여줄게염__
 
 ### 9.1.1 GraphX API를 사용해 그래프 만들기
 
@@ -386,7 +386,7 @@ AStar object를 구현한 다음
 AStar.run(graph3dDst, 1, 10, 50, calcDistance3d, (e:Double) => e) 
 ```
 
-//FIXME
+__그림이첨부가안돼서 직접보여줄게염__
 ![A* 알고리즘 2차원지도]()
 
 
