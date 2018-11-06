@@ -380,8 +380,9 @@ wikiSCC.vertices.filter(x => x._2 == 892)
 - G+H 가 가장 작은 정점들을 선택한다
 - 두 정점 사이의 거리를 예상할수 없는 그래프에는 이 알고리즘 사용못함
     - ex) 심슨가족 그래프
-- 사용예제
+
 ```
+AStar object를 구현한 다음 
 AStar.run(graph3dDst, 1, 10, 50, calcDistance3d, (e:Double) => e) 
 ```
 
