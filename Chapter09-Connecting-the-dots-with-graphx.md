@@ -2,14 +2,14 @@
 
 ## 9.1 스파크의 그래프 연산
 
-** 그래프 만드는 이유 **
+**그래프 만드는 이유**
 - 그래프 알고리즘 문제로 더 쉽게 풀릴수있다
     - 계층데이터
     - 사람과 사람, 사람과 SNS와의 관계
     - 하이퍼링크로 연결된 웹페이지
 
 
-** 그래프(graph) = 정점(vertex) + 간선(edge) **
+**그래프(graph) = 정점(vertex) + 간선(edge)**
 - 간선은 방향성이 있다
 - 정점에 속성객체(property object) 부여
 
@@ -235,13 +235,15 @@ linkIndexes.map(x => x._1).union(linkIndexes.map(x => x._2)).distinct().count()
 - `ShortestPaths` 객체 사용
 
 - Rainbow문서에서 14th_centry 문서로 가는 최단경로 찾기
-    - step1. 문서ID 찾기
+1. 문서ID 찾기
 ```scala
 articles.filter(x => x._1 == "Rainbow" || x._1 == "14th_century").collect().foreach(println)
 // (14th_century,10)
 // (Rainbow,3425)
 ```
-    - step2. 14th_century의 ID를 ShortestPaths의 run메서드에 전달
+
+2. 14th_century의 ID를 ShortestPaths의 run메서드에 전달
+
 ```
 import org.apache.spark.graphx.lib._
 //shortest의 vertex 속성 == 다른 vertex까지 거리를 담은 map
