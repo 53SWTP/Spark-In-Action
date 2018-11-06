@@ -241,7 +241,7 @@ articles.filter(x => x._1 == "Rainbow" || x._1 == "14th_century").collect().fore
 // (Rainbow,3425)
 ```
 
-```
+```scala
 import org.apache.spark.graphx.lib._
 //shortest의 vertex 속성 == 다른 vertex까지 거리를 담은 map
 val shortest = ShortestPaths.run(wikigraph, Seq(10))
