@@ -73,14 +73,17 @@ val newGraphExt = newgraph.mapVertices((vid, person) => PersonExt(person.name, p
 
 
 >[aggregateMessages 메서드 시그니처] 
+```
 def aggregateMessages[A: ClassTag](
-    * sendMsg: EdgeContext[VD, ED, A] => Unit,
-        - 각 edge의 메시지 전송여부 검토 + 연결된 vertex로 메시지 전송(sendToSrc, sendToDst)
-    * mergeMsg: (A,A) => A,
-        - 각 vertex에 도착한 메시지 집계
-    * tripletFields: TripletFields = TripletFields.All)
-        - 어떤 데이터 필드를 전달할지 지정(optional)
+    //각 edge의 메시지 전송여부 검토 + 연결된 vertex로 메시지 전송(sendToSrc, sendToDst)
+    sendMsg: EdgeContext[VD, ED, A] => Unit,
+    //각 vertex에 도착한 메시지 집계
+    mergeMsg: (A,A) => A,
+    //어떤 데이터 필드를 전달할지 지정(optional)
+    tripletFields: TripletFields = TripletFields.All)
 : VertexRDD[A]
+```
+
 
 
 ```scala
