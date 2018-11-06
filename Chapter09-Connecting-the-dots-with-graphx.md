@@ -10,17 +10,12 @@
 
 
 **그래프(graph) = 정점(vertex) + 간선(edge)**
-- 간선은 방향성이 있다
-- 정점에 속성객체(property object) 부여
-
-- VertexRDD[VD]: (ID: Long, attr: VD)
-```
-ex) (1L, Person("Homer", 39)
-```
-- EdgeRDD[ED]: (srcID: Long, destId: Long, attr: ED)
-```
-ex) Edge(4L, 3L, "friend")
-```
+    - 간선은 방향성이 있다
+    - 정점에 속성객체(property object) 부여
+    - VertexRDD[VD]: (ID: Long, attr: VD)
+        -ex) (1L, Person("Homer", 39)
+    - EdgeRDD[ED]: (srcID: Long, destId: Long, attr: ED)
+        - ex) Edge(4L, 3L, "friend")
 
 //FIXME
 ![Spark Graph]()
