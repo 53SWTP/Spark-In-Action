@@ -248,7 +248,7 @@ val shortest = ShortestPaths.run(wikigraph, Seq(10))
 
 //Rainbow에 해당하는 vertex찾기
 shortest.vertices.filter(x => x._1 == 3425).collect.foreach(println)
-// (3425,Map(1772 -> 2)) //FIXME: 1772는뭐지
+// (3425,Map(10 -> 2)) 
 
 //실제 최소 클릭횟수는 2번!
 ```
