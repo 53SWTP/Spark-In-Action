@@ -2,18 +2,17 @@
 
 ## 9.1 스파크의 그래프 연산
 
-### 그래프 만드는 이유
+** 그래프 만드는 이유 **
 - 그래프 알고리즘 문제로 더 쉽게 풀릴수있다
-ex) 계층데이터
-사람과 사람, 사람과 SNS와의 관계
-하이퍼링크로 연결된 웹페이지
+    - 계층데이터
+    - 사람과 사람, 사람과 SNS와의 관계
+    - 하이퍼링크로 연결된 웹페이지
 
 
-### 그래프(graph) = 정점(vertex) + 간선(edge)
+** 그래프(graph) = 정점(vertex) + 간선(edge) **
 - 간선은 방향성이 있다
 - 정점에 속성객체(property object) 부여
 
-- Degree: Vertex에 연결된 Edge수
 - VertexRDD[VD]: (ID: Long, attr: VD)
 ```
 ex) (1L, Person("Homer", 39)
@@ -25,6 +24,8 @@ ex) Edge(4L, 3L, "friend")
 
 //FIXME
 ![Spark Graph]()
+
+### 9.1.1 GraphX API를 사용해 그래프 만들기
 
 ```scala
 import org.apache.spark.graphx._
@@ -38,6 +39,8 @@ val edges = sc.parallelize(Array(Edge(4L, 3L, "friend"),
     Edge(1L, 2L, "marriedTo")))
 
 val graph = Graph(vertices, edges)
+
+
 graph.vertices.count()
 //4
 graph.edges.count()
@@ -45,9 +48,9 @@ graph.edges.count()
 ```
 
 ---
-
-### GraphOps클래스 = Graph객체 + 몇가지 메서드
-1) Edge의 attribute수정하기
+### 9.1.2 그래프 변환
+** GraphOps클래스 = Graph객체 + 몇가지 메서드(`mapEdges`, `mapVertices` 등)**
+#### Edge의 attribute수정하기(`mapEdges`)
 
 위의 예제에서 attribute를 Relationship 클래스 인스턴스로 변경
 (나중에 더 많은 정보를 추가할수있다!)
@@ -57,11 +60,16 @@ case class Relationship(relation:String)
 var newgraph = graph.mapEdges((partId, iter) =>
     iter.map(edge => Relationship(edge.attr))
 )
-//결과확인
+
+
 newgraph.edges.collect()
-//Array[org.apache.spark.graphx.Edge[Relationship]] = Array(Edge(3,1,Relationship(father)), Edge(4,3,Relationship(friend))...
+//Array[org.apache.spark.graphx.Edge[Relationship]] = 
+Array(Edge(3,1,Relationship(father)), 
+Edge(4,3,Relationship(friend))
+...
 ```
-2) Vertex의 attribute수정하기
+
+#### Vertex의 attribute수정하기(`mapVertices`)
 children수, friends수, married 여부 추가하기
 
 ```scala
@@ -70,7 +78,7 @@ val newGraphExt = newgraph.mapVertices((vid, person) => PersonExt(person.name, p
 ```
 
 요기까지하면 default값(children:0, friends:0, married: false)로 되어있다
-
+`aggregateMessages`를 사용해 추가한 attribute에 값을 추가해보자
 
 >[aggregateMessages 메서드 시그니처] 
 ```
@@ -100,6 +108,7 @@ val aggVertices = newGraphExt.aggregateMessages(
     //mergeMsg
     (msg1:Tuple3[Int, Int, Boolean], msg2:Tuple3[Int, Int, Boolean]) => (msg1._1+msg2._1, msg1._2+msg2._2, msg1._3 || msg2._3))
 
+
 aggVertices.collect.foreach(println)
 // (4,(0,1,false))
 // (2,(1,0,true))
@@ -108,7 +117,8 @@ aggVertices.collect.foreach(println)
 ```
 
 aggregateMessages의 결과값이 VertexRDD[A]니까 실제 그래프에 반영하려면
-**aggVertices의 정점과 기존 그래프를 조인해야함**
+
+`outerJoinVertices`로 aggVertices의 정점과 기존 그래프를 조인해야함
 
 
 > [outerJoinVertices 메서드 시그니처]
@@ -128,6 +138,7 @@ val graphAggr = newGraphExt.outerJoinVertices(aggVertices)(
     }}
 )
 
+
 graphAggr.vertices.collect().foreach(println)
 // (4,PersonExt(Milhouse,12,0,1,false))
 // (2,PersonExt(Marge,39,1,0,true))
@@ -137,15 +148,15 @@ graphAggr.vertices.collect().foreach(println)
 
 
 > Pregel
-: 구글이 개발한 대규모 그래프 처리시스템. 프리겔 성능이 강력해서 GraphX 그래프 알고리즘 상당수가 프리겔사용
-superstep이라는 반복 시퀀스를 실행해 메시지를 전달한다.
-첫번째 superstep은 모든 vertex에서 실행
--> 두번째 superstep은 메시지를 받은 vertex에서만 실행(여기서만 sendMsg 호출)
+- 구글이 개발한 대규모 그래프 처리시스템. GraphX 그래프 알고리즘 상당수가 프리겔사용
+- superstep이라는 반복 시퀀스를 실행해 메시지를 전달
+   - 첫번째 superstep은 모든 vertex에서 실행
+   - -> 두번째 superstep은 메시지를 받은 vertex에서만 실행(여기서만 sendMsg 호출)
 
 ---
 
-### 그래프 부분집합 선택(필터링)
-- subgraph: 주어진 조건을 만족하는 정점과 간선선택
+#### 그래프 부분집합 선택(필터링)
+- **subgraph**: 주어진 조건을 만족하는 정점과 간선선택
 
 > [subgraph 메서드 시그니처]
 ```
@@ -161,28 +172,32 @@ def subgraph(
 ```scala
 //자녀가 있는 사람만 선택
 val parents = graphAggr.subgraph(_ => true, (vertexId, person) => person.children > 0)
-//
+
+
 parents.vertices.collect.foreach(println)
 //(2,PersonExt(Marge,39,1,0,true))
 //(1,PersonExt(Homer,39,1,0,true))
+
+
 parents.edges.collect.foreach(println)
 //Edge(1,2,Relationship(marriedTo))
 ```
 
-- mask: 그래프 vs 그래프에서 두 그래프에 모두 존재하는 vertex, edge만 유지
-(속성개체 고려하지않고 그래프 객체만 인수로 받음)
-- filter: subgraph와 mask메서드를 조합한 메서드
-전처리함수, 정점 조건 함수, 간선 조건함수를 인수로 받음.
-전처리함수로 생성된 새로운 그래프를 subgraph로 일부만 선택 vs 원본그래프 mask함
-(전처리 그래프를 만들 필요가 없을때 사용)
+- **mask**: 그래프 vs 그래프에서 두 그래프에 모두 존재하는 vertex, edge만 유지
+    - 속성개체 고려하지않고 그래프 객체만 인수로 받음
+    
+- **filter**: subgraph와 mask메서드를 조합한 메서드
+    - 전처리함수, 정점 조건 함수, 간선 조건함수를 인수로 받음.
+    - 전처리함수로 생성된 새로운 그래프를 subgraph로 일부만 선택 vs 원본그래프 mask함
+    - 전처리 그래프를 만들 필요가 없을때 사용
 
 
 ## 9.2 그래프 알고리즘
 
-최단거리, 페이지랭크, 연결요소, 강연결요소
+** 최단거리, 페이지랭크, 연결요소, 강연결요소**
 
-articles.tsv: 문서이름이 한줄에 하나씩
-links.tsv: 각 링크별 출발문서이름, 도착문서이름
+- articles.tsv: 문서이름이 한줄에 하나씩
+- links.tsv: 각 링크별 출발문서이름, 도착문서이름
 
 ```scala
 //내용이 없거나 주석인것 제거 + ID 부여
@@ -216,15 +231,14 @@ linkIndexes.map(x => x._1).union(linkIndexes.map(x => x._2)).distinct().count()
 ### 최단거리: 정점에서 다른정점으로 향하는 최단경로
 : ShortestPaths 객체 사용
 
-Q. Rainbow문서에서 14th_centry 문서로 가는 최단경로 찾기
-A.
-step1) 문서ID 찾기
+- Rainbow문서에서 14th_centry 문서로 가는 최단경로 찾기
+1. 문서ID 찾기
 ```scala
 articles.filter(x => x._1 == "Rainbow" || x._1 == "14th_century").collect().foreach(println)
 // (14th_century,10)
 // (Rainbow,3425)
 ```
-step2) 14th_century의 ID를 ShortestPaths의 run메서드에 전달
+2. 14th_century의 ID를 ShortestPaths의 run메서드에 전달
 ```
 import org.apache.spark.graphx.lib._
 //shortest의 vertex 속성 == 다른 vertex까지 거리를 담은 map
