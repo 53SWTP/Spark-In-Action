@@ -44,6 +44,7 @@ graph.edges.count()
 //4
 ```
 
+---
 
 ### GraphOps클래스 = Graph객체 + 몇가지 메서드
 1) Edge의 attribute수정하기
@@ -70,9 +71,6 @@ val newGraphExt = newgraph.mapVertices((vid, person) => PersonExt(person.name, p
 
 요기까지하면 default값(children:0, friends:0, married: false)로 되어있다
 
-| [aggregateMessages 메서드 시그니처]                                                                                                                                                                                                                                                                                                                            |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| def aggregateMessages[A: ClassTag](     //각 edge의 메시지 전송여부 검토 + 연결된 vertex로 메시지 전송(sendToSrc, sendToDst)     sendMsg: EdgeContext[VD, ED, A] => Unit,     //각 vertex에 도착한 메시지 집계     mergeMsg: (A,A) => A,     //어떤 데이터 필드를 전달할지 지정(optional)     tripletFields: TripletFields = TripletFields.All) : VertexRDD[A] |
 
 >[aggregateMessages 메서드 시그니처] 
 ```
@@ -114,10 +112,12 @@ aggregateMessages의 결과값이 VertexRDD[A]니까 실제 그래프에 반영�
 
 
 > [outerJoinVertices 메서드 시그니처]
+```
 def outerJoinVertices[U: ClassTag, VD2:ClassTag]
     //VID, 새로입력한속성U 로 구성된 RDD
     (other: RDD[(VertexId, U)])
     // VID, 기존그래프의VD, 새로입력한속성U (새로입력한 RDD에 U가 없으면 None객체리턴)
+```
 
 
 ```scala
@@ -142,12 +142,13 @@ superstep이라는 반복 시퀀스를 실행해 메시지를 전달한다.
 첫번째 superstep은 모든 vertex에서 실행
 -> 두번째 superstep은 메시지를 받은 vertex에서만 실행(여기서만 sendMsg 호출)
 
-
+---
 
 ### 그래프 부분집합 선택(필터링)
 - subgraph: 주어진 조건을 만족하는 정점과 간선선택
 
 > [subgraph 메서드 시그니처]
+```
 def subgraph(
     //edge 조건함수 (true면 포함)
     epred: EdgeTriplet[VD, ED] => Boolean = (x => true),
@@ -155,6 +156,7 @@ def subgraph(
     //(vertex가 없어지면 연결돤 edge는 자동으로 지워짐)
     vpred: (VertexId, VD) => Boolean = ((v,d) => true))
    : Graph[VD,ED]
+```
 
 ```scala
 //자녀가 있는 사람만 선택
