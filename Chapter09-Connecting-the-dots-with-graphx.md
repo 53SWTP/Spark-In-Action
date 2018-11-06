@@ -15,7 +15,7 @@
 - 정점에 속성객체(property object) 부여
 
 - VertexRDD[VD]: (ID: Long, attr: VD)
-    -ex) (1L, Person("Homer", 39)
+    - ex) (1L, Person("Homer", 39)
     
 - EdgeRDD[ED]: (srcID: Long, destId: Long, attr: ED)
     - ex) Edge(4L, 3L, "friend")
