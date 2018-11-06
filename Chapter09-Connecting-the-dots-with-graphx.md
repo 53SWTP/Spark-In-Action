@@ -49,7 +49,7 @@ graph.edges.count()
 
 ---
 ### 9.1.2 그래프 변환
-** GraphOps클래스 = Graph객체 + 몇가지 메서드(`mapEdges`, `mapVertices` 등)**
+
 #### Edge의 attribute수정하기(`mapEdges`)
 
 위의 예제에서 attribute를 Relationship 클래스 인스턴스로 변경
@@ -77,7 +77,8 @@ case class PersonExt(name:String, age:Int, children:Int=0, friends:Int=0, marrie
 val newGraphExt = newgraph.mapVertices((vid, person) => PersonExt(person.name, person.age))
 ```
 
-요기까지하면 default값(children:0, friends:0, married: false)로 되어있다
+요기까지하면 default값(children:0, friends:0, married: false)로 되어있다.
+
 `aggregateMessages`를 사용해 추가한 attribute에 값을 추가해보자
 
 >[aggregateMessages 메서드 시그니처] 
@@ -153,7 +154,6 @@ graphAggr.vertices.collect().foreach(println)
    - 첫번째 superstep은 모든 vertex에서 실행
    - -> 두번째 superstep은 메시지를 받은 vertex에서만 실행(여기서만 sendMsg 호출)
 
----
 
 #### 그래프 부분집합 선택(필터링)
 - **subgraph**: 주어진 조건을 만족하는 정점과 간선선택
@@ -194,7 +194,9 @@ parents.edges.collect.foreach(println)
 
 ## 9.2 그래프 알고리즘
 
-** 최단거리, 페이지랭크, 연결요소, 강연결요소**
+**최단거리, 페이지랭크, 연결요소, 강연결요소**를 하나씩 볼건데 일단 아래 데이터를 가져온다.
+
+### 9.2.1 예제 데이터셋
 
 - articles.tsv: 문서이름이 한줄에 하나씩
 - links.tsv: 각 링크별 출발문서이름, 도착문서이름
@@ -216,7 +218,8 @@ val linkIndexes = links.
         (spl(0), spl(1)) }).
      join(articles).map(x => x._2).join(articles).map(x => x._2)
 
-val wikigraph = Graph.fromEdgeTuples(linkIndexes, 0)
+val wikigraph = Graph.fromEdgeTuples(linkIndexes, 0
+
 //확인
 wikigraph.vertices.count()
 //Long = 4592
@@ -228,17 +231,17 @@ linkIndexes.map(x => x._1).union(linkIndexes.map(x => x._2)).distinct().count()
 //Long = 4592
 ```
 
-### 최단거리: 정점에서 다른정점으로 향하는 최단경로
-: ShortestPaths 객체 사용
+### 9.2.2 최단거리: 정점에서 다른정점으로 향하는 최단경로
+- `ShortestPaths` 객체 사용
 
 - Rainbow문서에서 14th_centry 문서로 가는 최단경로 찾기
-1. 문서ID 찾기
+    - step1. 문서ID 찾기
 ```scala
 articles.filter(x => x._1 == "Rainbow" || x._1 == "14th_century").collect().foreach(println)
 // (14th_century,10)
 // (Rainbow,3425)
 ```
-2. 14th_century의 ID를 ShortestPaths의 run메서드에 전달
+    - step2. 14th_century의 ID를 ShortestPaths의 run메서드에 전달
 ```
 import org.apache.spark.graphx.lib._
 //shortest의 vertex 속성 == 다른 vertex까지 거리를 담은 map
@@ -251,13 +254,13 @@ shortest.vertices.filter(x => x._1 == 3425).collect.foreach(println)
 //실제 최소 클릭횟수는 2번!
 ```
 
-### 페이지랭크(PR): 정점의 상대적 중요도 계산 (정점으로 들어오고 나가는 간선개수)
-: Graph의 pageRank 메서드 사용
+### 9.2.3 페이지랭크(PR): 정점의 상대적 중요도 계산 (정점으로 들어오고 나가는 간선개수)
+- Graph의 `pageRank` 메서드 사용
 
-step1. 각 vertex의 PR값을 1로 초기화
-step2. (vertex의 PR값 / 정점에서 나가는 간선 개수) + 인접 정점의 PR값
-* 페이지를 나가는 링크가 적고 들어오는 링크가 많을수록 PR값이 높다
-step3. 모든 PR값의 변동폭이 수렴허용치보다 작을때까지 반복!
+    - step1. 각 vertex의 PR값을 1로 초기화
+    - step2. (vertex의 PR값 / 정점에서 나가는 간선 개수) + 인접 정점의 PR값
+        * 페이지를 나가는 링크가 적고 들어오는 링크가 많을수록 PR값이 높다
+    - step3. 모든 PR값의 변동폭이 수렴허용치보다 작을때까지 반복!
 
 ```scala
 //수렴허용치: 0.001
@@ -286,16 +289,14 @@ sortWith((x, y) => x._2._1 > y._2._1).foreach(println)
 // (2098,(18.246567557461464,India))
 ```
 
-### 연결요소(Connected Components): 그래프에서 서로 완전히 분리된 서브그래프 찾음
-비방향성 그래프의 서브그래프
-vertex A -> 모든 vertex로 연결되는 그래프
+### 9.2.4 연결요소(Connected Components): 그래프에서 서로 완전히 분리된 서브그래프 찾음
+- 비방향성 그래프의 서브그래프
+- vertex A -> 모든 vertex로 연결되는 그래프
 
 ![CC](https://i.imgur.com/EK3sI5c.png)
 
-연결그래프인지 아닌지 확인하는게 좋다. 연결이 안되어있으면 알고리즘 결과도 이상함
-
-:Graph의 connectedComponents 사용
-(메서드는 GraphOps객체로 암시적으로 제공)
+- 연결그래프인지 아닌지 확인하는게 좋다. 연결이 안되어있으면 알고리즘 결과도 이상함
+- Graph의 `connectedComponents` 사용 (메서드는 GraphOps객체로 암시적으로 제공)
 
 ```scala
 //각 연결요소는 vertexId가 가장 작은걸로 식별
