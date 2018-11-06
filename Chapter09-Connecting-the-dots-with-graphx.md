@@ -313,7 +313,7 @@ distinct().join(articles.map(_.swap)).collect.foreach(println)
 //각 군집의 페이지개수
 wikiCC.vertices.map(x => (x._2, x._2)).countByKey().foreach(println)
 // (0,4589)
-// (1210,3)
+// (1210,3) 이 군집에 속한 페이지는 3개다. 대체로 잘연결됨
 
 ```
 
@@ -341,6 +341,33 @@ wikiSCC.vertices.map(x => x._2).distinct.count
 //어떤 SCC의 규모가 가장큰지
 wikiSCC.vertices.map(x => (x._2, x._1)).countByKey().
     filter(_._2 > 1).toList.sortWith((x, y) => x._2 > y._2).foreach(println)
+//(6,4051)  가장큰 SCC에는 정점이 4051개나 있다
+//(2488,6)
+//(1831,3)
+//...
+```
+
+좀 작은 2488 SCC를 살펴보쟈
+```scala
+wikiSCC.vertices.filter(x => x._2 == 2488).
+    join(articles.map(x=> (x._2, x._1))).collect.foreach(println)
+//(2490,(2488,List_of_Asian_countries)) //대륙별 국가목록
+//(2496,(2488,List_of_Oceanian_countries))
+//(2498,(2488,List_of_South_American_countries))
+//(2493,(2488,List_of_European_countries))
+//(2488,(2488,List_of_African_countries))
+//(2495,(2488,List_of_North_American_countries))
+
+wikiSCC.vertices.filter(x => x._2 == 1831).
+    join(articles.map(x => (x._2, x._1))).collect.foreach(println)
+// (1831,(1831,HD_217107))  //행성들의 정보
+// (1832,(1831,HD_217107_b))
+// (1833,(1831,HD_217107_c))
+
+wikiSCC.vertices.filter(x => x._2 == 892)
+    .join(articles.map(x => (x._2, x._1))).collect.foreach(println)
+// (1262,(892,Dunstable_Downs)) //영국 지역
+// (892,(892,Chiltern_Hills))
 ```
 
 
