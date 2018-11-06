@@ -216,7 +216,7 @@ val linkIndexes = links.
         (spl(0), spl(1)) }).
      join(articles).map(x => x._2).join(articles).map(x => x._2)
 
-val wikigraph = Graph.fromEdgeTuples(linkIndexes, 0
+val wikigraph = Graph.fromEdgeTuples(linkIndexes, 0)
 
 //확인
 wikigraph.vertices.count()
