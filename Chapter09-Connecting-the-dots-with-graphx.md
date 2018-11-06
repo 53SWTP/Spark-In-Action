@@ -62,9 +62,9 @@ var newgraph = graph.mapEdges((partId, iter) =>
 
 newgraph.edges.collect()
 //Array[org.apache.spark.graphx.Edge[Relationship]] = 
-Array(Edge(3,1,Relationship(father)), 
-Edge(4,3,Relationship(friend))
-...
+//  Array(Edge(3,1,Relationship(father)), 
+//  Edge(4,3,Relationship(friend))
+//  ...
 ```
 
 #### Vertex의 attribute수정하기(`mapVertices`)
