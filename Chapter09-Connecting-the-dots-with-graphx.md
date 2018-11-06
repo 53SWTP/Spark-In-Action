@@ -604,3 +604,9 @@ sc.setCheckpointDir("/tmp/sparkCheckpoint")
 //graph3dDst에 edgeWeight를 계산해 넣어서 있으니까 그대로 반환
 AStar.run(graph3dDst, 1, 10, 50, calcDistance3d, (e:Double) => e)
 ```
+
+
+**RESULT**
+```
+Array[Point] = Array(Point(1.0,2.0,4.0), Point(6.0,4.0,4.0), Point(7.0,9.0,1.0), Point(10.0,10.0,2.0))
+```
