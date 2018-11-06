@@ -235,14 +235,13 @@ linkIndexes.map(x => x._1).union(linkIndexes.map(x => x._2)).distinct().count()
 - `ShortestPaths` 객체 사용
 
 - Rainbow문서에서 14th_centry 문서로 가는 최단경로 찾기
-1. 문서ID 찾기
+    - step1. 문서ID 찾기
+    - step2. 14th_century의 ID를 ShortestPaths의 run메서드에 전달
 ```scala
 articles.filter(x => x._1 == "Rainbow" || x._1 == "14th_century").collect().foreach(println)
 // (14th_century,10)
 // (Rainbow,3425)
 ```
-
-2. 14th_century의 ID를 ShortestPaths의 run메서드에 전달
 
 ```
 import org.apache.spark.graphx.lib._
@@ -320,20 +319,19 @@ wikiCC.vertices.map(x => (x._2, x._2)).countByKey().foreach(println)
 
 ```
 
-### 강연결요소(Strongly Connected Components, SCC): 모든 정점이 다른 모든 정점과 연결된 서브 그래프
-방향성 그래프의 서브그래프. 연결요소보다 더 엄격한 기준으로 군집을 만든다.
-
-vertex u에서 v로 향하는 경로가 있고 v에서 u로 향하는 경로가 있으면 강연결요소
-아래 그림은 4개의 강연결요소가 있음
+### 9.2.5 강연결요소(Strongly Connected Components, SCC): 모든 정점이 다른 모든 정점과 연결된 서브 그래프
+- 방향성 그래프의 서브그래프. 
+- 연결요소보다 더 엄격한 기준으로 군집을 만든다.
+- vertex u에서 v로 향하는 경로가 있고 v에서 u로 향하는 경로가 있으면 강연결요소
+- 아래 그림은 4개의 강연결요소가 있음
 ![SCC](https://i.imgur.com/voD317r.png)
 
-강연결요소끼리는 어떤 방향에서든 서로 도달가능하기 때문에 다음과 같이 정보를 압축하는데 사용가능하다. (군집을 찾음)
+- 강연결요소끼리는 다음과 같이 정보를 압축하는데 사용가능하다. (군집을 찾음)
 ![SCC2](https://i.imgur.com/ZG6xwHP.png)
 
-참고/출처: https://ratsgo.github.io/data%20structure&algorithm/2017/11/23/SCC/
+출처: https://ratsgo.github.io/data%20structure&algorithm/2017/11/23/SCC/
 
-:Graph의 stronglyConnectedComponents(최대반복횟수) 사용
-(메서드는 GraphOps객체로 암시적으로 제공)
+- Graph의 `stronglyConnectedComponents(최대반복횟수)` 사용
 
 ```scala
 val wikiSCC = wikigraph.stronglyConnectedComponents(100)
@@ -350,16 +348,23 @@ wikiSCC.vertices.map(x => (x._2, x._1)).countByKey().
 
 ## 9.3 A* 검색 알고리즘 구현
 
-A*: 두 정점 사이의 최단 경로를 찾는 알고리즘
-시작 -(비용 계산1: G)- 임의의 정점V -(비용계산2: H)- 도착
-G+H 가 가장 작은 정점들을 선택한다
+### 9.3.1 A* 알고리즘의 이해
 
+- A*: 두 정점 사이의 최단 경로를 찾는 알고리즘
+    - [시작] - 비용G - [정점V] -비용H- [도착]
+- G+H 가 가장 작은 정점들을 선택한다
 - 두 정점 사이의 거리를 예상할수 없는 그래프에는 이 알고리즘 사용못함
-ex) 심슨가족 그래프
+    - ex) 심슨가족 그래프
+- 사용예제
+```
+AStar.run(graph3dDst, 1, 10, 50, calcDistance3d, (e:Double) => e) 
+```
 
 //FIXME
 ![A* 알고리즘 2차원지도]()
 
+
+### 9.3.2 A* 알고리즘 구현
 ```scala
 object AStar extends Serializable {
     import scala.reflect.ClassTag
@@ -532,9 +537,9 @@ object AStar extends Serializable {
 }
 ```
 
-테스트
-3차원 공간의 점을 연결한 그래프. X,Y,Z좌표 저장
-Vertex 1 부터 Vertex 10으로 가는 최단경로를 계산
+### 9.3.3 테스트
+- 3차원 공간의 점을 연결한 그래프. X,Y,Z좌표 저장
+- Vertex 1 부터 Vertex 10으로 가는 최단경로를 계산
 
 ```scala
 case class Point(x:Double, y:Double, z:Double)
