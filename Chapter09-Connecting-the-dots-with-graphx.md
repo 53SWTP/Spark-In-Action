@@ -71,16 +71,17 @@ val newGraphExt = newgraph.mapVertices((vid, person) => PersonExt(person.name, p
 요기까지하면 default값(children:0, friends:0, married: false)로 되어있다
 
 
->[aggregateMessages 메서드 시그니처]
-def aggregateMessages[A: ClassTag](
-    //각 edge의 메시지 전송여부 검토 + 연결된 vertex로 메시지 전송(sendToSrc, sendToDst)
-    sendMsg: EdgeContext[VD, ED, A] => Unit,
-    //각 vertex에 도착한 메시지 집계
-    mergeMsg: (A,A) => A,
-    //어떤 데이터 필드를 전달할지 지정(optional)
-    tripletFields: TripletFields = TripletFields.All)
-: VertexRDD[A]
-```
+
+>[aggregateMessages 메서드 시그니처] <br/>
+def aggregateMessages[A: ClassTag](<br/>
+    //각 edge의 메시지 전송여부 검토 + 연결된 vertex로 메시지 전송(sendToSrc, sendToDst)<br/>
+    sendMsg: EdgeContext[VD, ED, A] => Unit,<br/>
+    //각 vertex에 도착한 메시지 집계<br/>
+    mergeMsg: (A,A) => A,<br/>
+    //어떤 데이터 필드를 전달할지 지정(optional)<br/>
+    tripletFields: TripletFields = TripletFields.All)<br/>
+: VertexRDD[A]<br/>
+
 
 ```scala
 val aggVertices = newGraphExt.aggregateMessages(
