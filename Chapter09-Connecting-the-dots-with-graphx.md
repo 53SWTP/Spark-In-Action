@@ -21,7 +21,6 @@
     - ex) Edge(4L, 3L, "friend")
 
 
-__그림이첨부가안돼서 직접보여줄게염😆__
 ![Graph_simson](https://github.com/53SWTP/Spark-In-Action/blob/master/9-1.png)
 
 ### 9.1.1 GraphX API를 사용해 그래프 만들기
@@ -387,9 +386,7 @@ AStar object를 구현한 다음
 AStar.run(graph3dDst, 1, 10, 50, calcDistance3d, (e:Double) => e) 
 ```
 
-![](https://github.com/53SWTP/Spark-In-Action/blob/master/9-2.png)
-
-![A* 알고리즘 2차원지도]()
+![A* 알고리즘 2차원지도](https://github.com/53SWTP/Spark-In-Action/blob/master/9-2.png)
 
 
 ### 9.3.2 A* 알고리즘 구현
