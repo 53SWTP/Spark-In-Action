@@ -17,7 +17,7 @@ ISBN: 9791160504798
 * [6장 스파크 스트리밍으로 데이터를 흐르게 하자](Chapter06-Spark-streaming.md)
 * [7장 MLlib로 더 똑똑해지자](Chapter07-Getting-smart-with-MLlib.md)
 * [8장 스파크 ML로 만드는 분류와 군집화](Chapter08-ML-Classification-and-clustering.md)
-* 9장 점을 연결하는 GraphX
+* [9장 점을 연결하는 GraphX](Chapter09-Connecting-the-dots-with-graphx.md)
 
 ### 3부 스파크 옵스
 * 10장 스파크 클러스터 구동
